@@ -1,8 +1,13 @@
-FROM amazoncorretto:17-alpine AS build
+FROM maven:3.9-amazoncorretto-17-alpine AS build
 WORKDIR /app
+
+# Cache dependencies layer
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Build application
 COPY src ./src
-RUN apk add --no-cache maven && mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -B
 
 FROM amazoncorretto:17-alpine
 WORKDIR /app

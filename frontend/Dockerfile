@@ -1,7 +1,11 @@
 FROM node:20-alpine AS build
 WORKDIR /app
+
+# Cache dependencies layer
 COPY package*.json ./
-RUN npm install
+RUN npm ci --silent
+
+# Build application
 COPY . .
 RUN npm run build
 
