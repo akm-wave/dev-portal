@@ -1,93 +1,193 @@
-# dev-portal
+# Dev Tracking Portal
 
+An enterprise-grade Dev Tracking Portal to track **Features → Microservices → Checklists** with real-time progress tracking, strong relationships, and admin control panel.
 
+## 🚀 Features
 
-## Getting started
+### Core Functionality
+- **Feature Management**: Track features with release versions, target dates, and status
+- **Microservice Management**: Manage microservices with version control and ownership
+- **Checklist Management**: Base entity for tracking tasks with status and priority
+- **Progress Tracking**: Real-time progress calculation based on checklist completion
+- **Relationship Management**: Features → Microservices → Checklists hierarchy
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### User Management
+- JWT-based authentication
+- Role-based access control (ADMIN/USER)
+- Secure password encryption with BCrypt
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### UI Features
+- Modern dashboard with statistics and charts
+- Feature list with "Impacted Microservices" and "Checklist Check" modals
+- Search, filter, and pagination for all entities
+- Progress bars and status indicators
+- Responsive design with Ant Design
 
-## Add your files
+## 🛠 Tech Stack
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### Backend
+- **Framework**: Spring Boot 3.2
+- **Database**: PostgreSQL
+- **ORM**: Spring Data JPA
+- **Security**: Spring Security + JWT
+- **Migration**: Flyway
+- **Mapping**: MapStruct
+- **Documentation**: OpenAPI/Swagger
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **UI Library**: Ant Design 5
+- **Build Tool**: Vite
+- **HTTP Client**: Axios
+- **Routing**: React Router 6
+
+## 📋 Prerequisites
+
+- Java 17+
+- Node.js 18+
+- PostgreSQL 15+
+- Maven 3.8+
+
+## 🚀 Quick Start
+
+### 1. Database Setup
+
+```bash
+# Create PostgreSQL database
+createdb devportal_dev
+```
+
+### 2. Backend Setup
+
+```bash
+# Navigate to project root
+cd dev-team-tracking-portal
+
+# Run with Maven
+./mvnw spring-boot:run
+```
+
+The backend will start at `http://localhost:8080/api`
+
+### 3. Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will start at `http://localhost:3000`
+
+## 🐳 Docker Deployment
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+## 📚 API Documentation
+
+Once the backend is running, access Swagger UI at:
+`http://localhost:8080/api/swagger-ui.html`
+
+## 🔐 Default Credentials
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.wavemoney.io/digitalmoneymyanmar/dev-portal.git
-git branch -M sit
-git push -uf origin sit
+Username: admin
+Password: Admin@123
+Role: ADMIN
 ```
 
-## Integrate with your tools
+## 📁 Project Structure
 
-- [ ] [Set up project integrations](https://gitlab.wavemoney.io/digitalmoneymyanmar/dev-portal/-/settings/integrations)
+```
+dev-team-tracking-portal/
+├── src/main/java/com/devportal/
+│   ├── config/           # Configuration classes
+│   ├── controller/       # REST controllers
+│   ├── domain/
+│   │   ├── entity/       # JPA entities
+│   │   └── enums/        # Enumerations
+│   ├── dto/
+│   │   ├── request/      # Request DTOs
+│   │   └── response/     # Response DTOs
+│   ├── exception/        # Exception handling
+│   ├── mapper/           # MapStruct mappers
+│   ├── repository/       # JPA repositories
+│   ├── security/         # Security configuration
+│   └── service/          # Business logic
+├── src/main/resources/
+│   ├── db/migration/     # Flyway migrations
+│   └── application*.yml  # Configuration files
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── contexts/     # React contexts
+│   │   ├── layouts/      # Layout components
+│   │   ├── pages/        # Page components
+│   │   ├── services/     # API services
+│   │   └── types/        # TypeScript types
+│   └── package.json
+├── docker-compose.yml
+├── Dockerfile
+└── pom.xml
+```
 
-## Collaborate with your team
+## 🔧 Configuration
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Environment Variables
 
-## Test and Deploy
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DB_HOST` | Database host | localhost |
+| `DB_USERNAME` | Database username | postgres |
+| `DB_PASSWORD` | Database password | postgres |
+| `JWT_SECRET` | JWT signing key | (generated) |
+| `SPRING_PROFILES_ACTIVE` | Active profile | dev |
 
-Use the built-in continuous integration in GitLab.
+## 📊 Entity Relationships
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```
+Feature (1) ──── (N) Microservice (N) ──── (N) Checklist
+         └── feature_microservices ──┘    └── microservice_checklists ──┘
+```
 
-***
+## 🔒 Security
 
-# Editing this README
+- All API endpoints except `/auth/**` require authentication
+- ADMIN role: Full CRUD access
+- USER role: Read-only access
+- JWT tokens expire after 24 hours
+- Passwords encrypted with BCrypt
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## 📈 Business Rules
 
-## Suggestions for a good README
+1. A microservice cannot exist without at least one checklist
+2. A feature cannot exist without at least one microservice
+3. Feature progress = average completion of all checklists under its microservices
+4. Microservice progress = percentage of completed checklists
+5. Cannot delete checklist if linked to active microservice
+6. Auto-update feature status when all microservices are completed
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## 🧪 Testing
 
-## Name
-Choose a self-explaining name for your project.
+```bash
+# Run backend tests
+./mvnw test
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+# Run frontend tests
+cd frontend && npm test
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## 📝 License
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+MIT License

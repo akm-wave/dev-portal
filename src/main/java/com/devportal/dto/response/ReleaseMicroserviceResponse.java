@@ -1,0 +1,26 @@
+package com.devportal.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReleaseMicroserviceResponse {
+
+    private UUID id;
+    private UUID microserviceId;
+    private String microserviceName;
+    private String branchName;
+    private String buildNumber;
+    private LocalDateTime releaseDate;
+    private String notes;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
