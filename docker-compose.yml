@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
     container_name: devportal-db
     environment:
-      POSTGRES_DB: devportal_dev
+      POSTGRES_DB: devportal_new
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
     volumes:
@@ -17,21 +15,42 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7-jammy
+    container_name: devportal-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: devportal_files
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   backend:
     build: .
     container_name: devportal-backend
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      DB_HOST: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/devportal_new
       DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      DB_PASSWORD: admin
+      MONGODB_URI: mongodb://mongodb:27017/devportal_files
       JWT_SECRET: devportal-secret-key-for-jwt-token-generation-must-be-at-least-256-bits-long
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
@@ -40,6 +59,8 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  mongodb_data:

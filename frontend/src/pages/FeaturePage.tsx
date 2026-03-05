@@ -451,7 +451,7 @@ const FeaturePage: React.FC = () => {
                       <Tag color={item.status === 'COMPLETED' ? 'success' : item.status === 'IN_PROGRESS' ? 'processing' : 'default'}>
                         {item.status.replace('_', ' ')}
                       </Tag>
-                      <span>Owner: {item.owner || 'N/A'}</span>
+                      <span>Owner: {typeof item.owner === 'string' ? item.owner : item.owner?.username || 'N/A'}</span>
                       <span>Version: {item.version || 'N/A'}</span>
                     </Space>
                     <Progress percent={item.progressPercentage} size="small" />
