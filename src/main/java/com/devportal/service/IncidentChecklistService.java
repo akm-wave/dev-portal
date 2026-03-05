@@ -50,7 +50,7 @@ public class IncidentChecklistService {
                 IncidentChecklistProgress newProgress = IncidentChecklistProgress.builder()
                         .incident(incident)
                         .checklist(checklist)
-                        .status(ChecklistStatus.PENDING)
+                        .status(ChecklistStatus.PLANNED)
                         .build();
                 progressRepository.save(newProgress);
             }

@@ -60,7 +60,7 @@ public class IncidentService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .severity(request.getSeverity())
-                .status(request.getStatus() != null ? request.getStatus() : IncidentStatus.OPEN)
+                .status(request.getStatus() != null ? request.getStatus() : IncidentStatus.PLANNED)
                 .mainFeature(feature)
                 .createdBy(username)
                 .build();
@@ -93,7 +93,7 @@ public class IncidentService {
         if (request.getStatus() != null) {
             IncidentStatus oldStatus = incident.getStatus();
             incident.setStatus(request.getStatus());
-            if (request.getStatus() == IncidentStatus.RESOLVED && oldStatus != IncidentStatus.RESOLVED) {
+            if (request.getStatus() == IncidentStatus.COMPLETED && oldStatus != IncidentStatus.COMPLETED) {
                 incident.setResolvedAt(LocalDateTime.now());
             }
         }

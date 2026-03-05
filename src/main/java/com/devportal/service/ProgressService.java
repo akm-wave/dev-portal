@@ -42,7 +42,7 @@ public class ProgressService {
             totalWeight += weight;
 
             switch (checklist.getStatus()) {
-                case DONE:
+                case COMPLETED:
                     completedTasks++;
                     completedWeight += weight;
                     break;
@@ -52,7 +52,7 @@ public class ProgressService {
                 case BLOCKED:
                     blockedTasks++;
                     break;
-                case PENDING:
+                case PLANNED:
                 default:
                     pendingTasks++;
                     break;

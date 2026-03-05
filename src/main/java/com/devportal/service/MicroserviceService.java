@@ -78,7 +78,7 @@ public class MicroserviceService {
         microservice.setChecklists(new HashSet<>(checklists));
         
         if (microservice.getStatus() == null) {
-            microservice.setStatus(MicroserviceStatus.NOT_STARTED);
+            microservice.setStatus(MicroserviceStatus.PLANNED);
         }
 
         microservice = microserviceRepository.save(microservice);
@@ -140,7 +140,7 @@ public class MicroserviceService {
         if (checklists == null || checklists.isEmpty()) return;
 
         long completedCount = checklists.stream()
-                .filter(c -> c.getStatus() == ChecklistStatus.DONE)
+                .filter(c -> c.getStatus() == ChecklistStatus.COMPLETED)
                 .count();
 
         if (completedCount == checklists.size()) {

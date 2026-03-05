@@ -61,7 +61,7 @@ public class FeatureDetailsService {
                 .collect(Collectors.toList());
 
         long completedCount = checkpointAnalyses.stream()
-                .filter(c -> c.getFeatureStatus() == ChecklistStatus.DONE)
+                .filter(c -> c.getFeatureStatus() == ChecklistStatus.COMPLETED)
                 .count();
         double overallProgress = allChecklists.isEmpty() ? 0.0 : 
                 Math.round((completedCount * 100.0 / allChecklists.size()) * 100.0) / 100.0;
@@ -92,7 +92,7 @@ public class FeatureDetailsService {
                 .filter(cl -> {
                     FeatureCheckpointProgress progress = progressMap.get(cl.getId());
                     ChecklistStatus status = progress != null ? progress.getStatus() : cl.getStatus();
-                    return status == ChecklistStatus.DONE;
+                    return status == ChecklistStatus.COMPLETED;
                 })
                 .count();
 
@@ -169,7 +169,7 @@ public class FeatureDetailsService {
                 .orElseGet(() -> FeatureCheckpointProgress.builder()
                         .feature(feature)
                         .checklist(checklist)
-                        .status(ChecklistStatus.PENDING)
+                        .status(ChecklistStatus.PLANNED)
                         .build());
 
         if (request.getStatus() != null) {

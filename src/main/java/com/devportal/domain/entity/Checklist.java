@@ -26,7 +26,7 @@ public class Checklist extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private ChecklistStatus status = ChecklistStatus.PENDING;
+    private ChecklistStatus status = ChecklistStatus.PLANNED;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)

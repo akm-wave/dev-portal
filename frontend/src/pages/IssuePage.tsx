@@ -104,8 +104,10 @@ const IssuePage: React.FC = () => {
     try {
       const response = await featureService.getAll({ size: 1000 });
       setFeatures(response.content);
+      console.log('Features loaded:', response.content.length);
     } catch (error) {
-      console.error('Failed to load features');
+      console.error('Failed to load features', error);
+      message.error('Failed to load features');
     }
   };
 
@@ -449,23 +451,44 @@ const IssuePage: React.FC = () => {
             label="Main Feature"
             rules={[{ required: true, message: 'Please select main feature' }]}
           >
-            <Select placeholder="Select main feature" showSearch optionFilterProp="children">
+            <Select 
+              placeholder="Select main feature" 
+              showSearch 
+              optionFilterProp="children"
+              loading={features.length === 0}
+              notFoundContent={features.length === 0 ? "Loading features..." : "No features found"}
+            >
               {features.map(f => (
-                <Option key={f.id} value={f.id}>{f.name} ({f.domain})</Option>
+                <Option key={f.id} value={f.id}>{f.name}</Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            name="ownerId"
-            label="Owner"
-            rules={[{ required: true, message: 'Please select an owner' }]}
-          >
-            <Select placeholder="Select owner" showSearch optionFilterProp="children">
-              {users.map(u => (
-                <Option key={u.id} value={u.id}>{u.fullName || u.username} ({u.email})</Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="assignedToId"
+                label="Assigned To"
+              >
+                <Select placeholder="Select assignee" showSearch optionFilterProp="children" allowClear>
+                  {users.map(u => (
+                    <Option key={u.id} value={u.id}>{u.fullName || u.username}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="ownerId"
+                label="Owner"
+              >
+                <Select placeholder="Select owner" showSearch optionFilterProp="children" allowClear>
+                  {users.map(u => (
+                    <Option key={u.id} value={u.id}>{u.fullName || u.username}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">

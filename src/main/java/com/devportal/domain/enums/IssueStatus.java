@@ -1,9 +1,9 @@
 package com.devportal.domain.enums;
 
 public enum IssueStatus {
-    OPEN,
+    PLANNED,
     ASSIGNED,
     IN_PROGRESS,
-    RESOLVED,
+    COMPLETED,
     CLOSED
 }

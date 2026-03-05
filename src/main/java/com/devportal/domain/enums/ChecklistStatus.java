@@ -1,8 +1,8 @@
 package com.devportal.domain.enums;
 
 public enum ChecklistStatus {
-    PENDING,
+    PLANNED,
     IN_PROGRESS,
-    DONE,
+    COMPLETED,
     BLOCKED
 }

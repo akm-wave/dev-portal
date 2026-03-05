@@ -85,7 +85,7 @@ public class FeatureCheckpointService {
                 FeatureCheckpoint checkpoint = FeatureCheckpoint.builder()
                         .feature(feature)
                         .checklist(checklist)
-                        .status(ChecklistStatus.PENDING)
+                        .status(ChecklistStatus.PLANNED)
                         .build();
                 newCheckpoints.add(checkpoint);
             }
@@ -120,7 +120,7 @@ public class FeatureCheckpointService {
     public double calculateFeatureProgress(UUID featureId) {
         long total = featureCheckpointRepository.countByFeatureId(featureId);
         if (total == 0) return 0.0;
-        long done = featureCheckpointRepository.countByFeatureIdAndStatus(featureId, ChecklistStatus.DONE);
+        long done = featureCheckpointRepository.countByFeatureIdAndStatus(featureId, ChecklistStatus.COMPLETED);
         return Math.round((done * 100.0 / total) * 100.0) / 100.0;
     }
 

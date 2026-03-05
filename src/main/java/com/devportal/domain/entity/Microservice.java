@@ -32,7 +32,7 @@ public class Microservice extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private MicroserviceStatus status = MicroserviceStatus.NOT_STARTED;
+    private MicroserviceStatus status = MicroserviceStatus.PLANNED;
 
     @Column(name = "high_risk")
     @Builder.Default

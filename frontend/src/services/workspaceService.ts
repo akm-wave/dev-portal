@@ -6,7 +6,8 @@ import {
   UserReminderRequest, 
   ReminderCounts,
   ReminderStatus,
-  PagedResponse 
+  PagedResponse,
+  WorkspaceProductivityDTO
 } from '../types';
 
 // Notes API
@@ -106,8 +107,19 @@ export const reminderService = {
     return response.data.data;
   },
 
-  snoozeReminder: async (id: string, minutes = 15): Promise<UserReminder> => {
-    const response = await api.post(`/workspace/reminders/${id}/snooze?minutes=${minutes}`);
+  snoozeReminder: async (id: string, snoozeUntil: Date): Promise<UserReminder> => {
+    const response = await api.post(`/workspace/reminders/${id}/snooze`, { snoozeUntil });
+    return response.data.data;
+  },
+};
+
+// Productivity API
+export const productivityService = {
+  getMyProductivityDashboard: async (dateRange = 'this_month'): Promise<WorkspaceProductivityDTO> => {
+    console.log('[Productivity Service] Making request to:', `/workspace/productivity?dateRange=${dateRange}`);
+    console.log('[Productivity Service] API client baseURL:', api.defaults.baseURL);
+    const response = await api.get(`/api/workspace/productivity?dateRange=${dateRange}`);
+    console.log('[Productivity Service] Response received:', response.status);
     return response.data.data;
   },
 };

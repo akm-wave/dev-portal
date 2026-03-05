@@ -31,14 +31,19 @@ import {
   SearchOutlined,
   BellOutlined,
   CheckOutlined,
+  CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
   InboxOutlined,
-  LinkOutlined
+  LinkOutlined,
+  BarChartOutlined,
+  TrophyOutlined,
+  FireOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { noteService, reminderService } from '../services/workspaceService';
+import { noteService, reminderService, productivityService } from '../services/workspaceService';
 import { 
   UserNote, 
   UserNoteRequest, 
@@ -47,7 +52,8 @@ import {
   ReminderPriority, 
   ReminderStatus,
   ModuleType,
-  ReminderCounts
+  ReminderCounts,
+  WorkspaceProductivityDTO
 } from '../types';
 
 dayjs.extend(relativeTime);
@@ -98,6 +104,9 @@ const MyWorkspacePage: React.FC = () => {
   const [editingReminder, setEditingReminder] = useState<UserReminder | null>(null);
   const [reminderForm] = Form.useForm();
   const [reminderCounts, setReminderCounts] = useState<ReminderCounts>({ overdue: 0, pending: 0 });
+  const [productivityData, setProductivityData] = useState<WorkspaceProductivityDTO | null>(null);
+  const [productivityLoading, setProductivityLoading] = useState(false);
+  const [dateRange, setDateRange] = useState('this_month');
 
   // Load notes
   const loadNotes = async () => {
@@ -129,13 +138,31 @@ const MyWorkspacePage: React.FC = () => {
     }
   };
 
+  // Load productivity data
+  const loadProductivityData = async () => {
+    setProductivityLoading(true);
+    try {
+      console.log('[MyWorkspace] Loading productivity data with dateRange:', dateRange);
+      const data = await productivityService.getMyProductivityDashboard(dateRange);
+      console.log('[MyWorkspace] Productivity data received:', data);
+      setProductivityData(data);
+    } catch (error) {
+      message.error('Failed to load productivity data');
+      console.error('Error loading productivity data:', error);
+    } finally {
+      setProductivityLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'notes') {
       loadNotes();
-    } else {
+    } else if (activeTab === 'reminders') {
       loadReminders();
+    } else if (activeTab === 'productivity') {
+      loadProductivityData();
     }
-  }, [activeTab, noteSearch, showArchived, reminderFilter]);
+  }, [activeTab, noteSearch, showArchived, reminderFilter, dateRange]);
 
   // Note handlers
   const handleCreateNote = () => {
@@ -528,6 +555,202 @@ const MyWorkspacePage: React.FC = () => {
     </div>
   );
 
+  // Render productivity tab
+  const renderProductivityTab = () => (
+    <Spin spinning={productivityLoading}>
+      <div style={{ marginBottom: 16 }}>
+        <Space>
+          <Select
+            value={dateRange}
+            onChange={setDateRange}
+            style={{ width: 150 }}
+          >
+            <Select.Option value="today">Today</Select.Option>
+            <Select.Option value="this_week">This Week</Select.Option>
+            <Select.Option value="this_month">This Month</Select.Option>
+          </Select>
+          {productivityData && (
+            <Text type="secondary">
+              Generated: {dayjs(productivityData.generatedAt).format('MMM DD, YYYY HH:mm')}
+            </Text>
+          )}
+        </Space>
+      </div>
+
+      {productivityData ? (
+        <Row gutter={[16, 16]}>
+          {/* SECTION A - My Active Work */}
+          <Col span={24}>
+            <Card title=" My Active Work" size="small">
+              <Row gutter={16}>
+                <Col span={4}>
+                  <Statistic title="Active Features" value={productivityData.activeFeatures} />
+                </Col>
+                <Col span={4}>
+                  <Statistic title="Active Incidents" value={productivityData.activeIncidents} />
+                </Col>
+                <Col span={4}>
+                  <Statistic title="Active Hotfixes" value={productivityData.activeHotfixes} />
+                </Col>
+                <Col span={4}>
+                  <Statistic title="Active Issues" value={productivityData.activeIssues} />
+                </Col>
+                <Col span={4}>
+                  <Statistic title="Active Microservices" value={productivityData.activeMicroservices} />
+                </Col>
+                <Col span={4}>
+                  <Statistic 
+                    title="Overdue Tasks" 
+                    value={productivityData.overdueTasks}
+                    valueStyle={{ color: productivityData.overdueTasks > 0 ? '#cf1322' : '#3f8600' }}
+                  />
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+
+          {/* SECTION B - My Productivity Metrics */}
+          <Col span={24}>
+            <Card title=" My Productivity Metrics" size="small">
+              <Row gutter={16}>
+                <Col span={6}>
+                  <Statistic
+                    title="Completion Rate"
+                    value={productivityData.completionRate}
+                    precision={1}
+                    suffix="%"
+                    valueStyle={{ color: productivityData.completionRate > 70 ? '#3f8600' : '#cf1322' }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Statistic
+                    title="On-Time Delivery"
+                    value={productivityData.onTimeRate}
+                    precision={1}
+                    suffix="%"
+                    valueStyle={{ color: productivityData.onTimeRate > 80 ? '#3f8600' : '#cf1322' }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Statistic
+                    title="Avg Resolution Time"
+                    value={productivityData.avgResolutionTime}
+                    precision={1}
+                    suffix="h"
+                  />
+                </Col>
+                <Col span={6}>
+                  <Tooltip title={
+                    <div>
+                      <div><strong>Score Calculation:</strong></div>
+                      <div>• Completed Feature: 10 points</div>
+                      <div>• Resolved Incident: 5 points</div>
+                      <div>• Deployed Hotfix: 5 points</div>
+                      <div>• Resolved Issue: 3 points</div>
+                      <div>• Completed Checkpoint: 1 point</div>
+                    </div>
+                  }>
+                    <Statistic
+                      title={<span>Productivity Score <InfoCircleOutlined style={{ fontSize: 12, color: '#999' }} /></span>}
+                      value={productivityData.productivityScore}
+                      valueStyle={{ 
+                        color: productivityData.productivityScore > 50 ? '#3f8600' : 
+                               productivityData.productivityScore > 20 ? '#faad14' : '#cf1322' 
+                      }}
+                    />
+                  </Tooltip>
+                  {productivityData.trendPercentage !== 0 && (
+                    <div style={{ fontSize: 12, marginTop: 4 }}>
+                      <span style={{ 
+                        color: productivityData.trendPercentage > 0 ? '#3f8600' : '#cf1322' 
+                      }}>
+                        {productivityData.trendPercentage > 0 ? '↑' : '↓'} {Math.abs(productivityData.trendPercentage).toFixed(1)}%
+                      </span>
+                    </div>
+                  )}
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+
+          {/* SECTION C - Accountability */}
+          <Col span={12}>
+            <Card title=" Overdue Items" size="small">
+              {productivityData.overdueItems.length > 0 ? (
+                <List
+                  size="small"
+                  dataSource={productivityData.overdueItems.slice(0, 5)}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={<ExclamationCircleOutlined style={{ color: '#cf1322' }} />}
+                        title={
+                          <Space>
+                            <span>{item.title}</span>
+                            <Tag color={item.priority === 'HIGH' ? 'red' : 'orange'}>{item.type}</Tag>
+                          </Space>
+                        }
+                        description={
+                          <Space direction="vertical" size={0}>
+                            <Text type="secondary">{item.daysOverdue} days overdue</Text>
+                            <Text type="secondary">Due: {dayjs(item.dueDate).format('MMM DD')}</Text>
+                          </Space>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <Empty description="No overdue items! " image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Card>
+          </Col>
+
+          <Col span={12}>
+            <Card title=" Recent Activities" size="small">
+              {productivityData.recentActivities.length > 0 ? (
+                <List
+                  size="small"
+                  dataSource={productivityData.recentActivities.slice(0, 5)}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={
+                          item.onTime ? 
+                            <CheckCircleOutlined style={{ color: '#3f8600' }} /> : 
+                            <ClockCircleOutlined style={{ color: '#faad14' }} />
+                        }
+                        title={
+                          <Space>
+                            <span>{item.title}</span>
+                            <Tag color="blue">{item.points} pts</Tag>
+                          </Space>
+                        }
+                        description={
+                          <Space direction="vertical" size={0}>
+                            <Text type="secondary">{item.type.replace('_', ' ')}</Text>
+                            <Text type="secondary">
+                              {dayjs(item.completedAt).fromNow()}
+                              {item.onTime ? ' (On time)' : ' (Late)'}
+                            </Text>
+                          </Space>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <Empty description="No recent activities" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Card>
+          </Col>
+        </Row>
+      ) : (
+        <Empty description="No productivity data available" />
+      )}
+    </Spin>
+  );
+
   return (
     <div style={{ padding: 24 }}>
       <Card 
@@ -564,6 +787,15 @@ const MyWorkspacePage: React.FC = () => {
                 </span>
               ),
               children: renderRemindersTab(),
+            },
+            {
+              key: 'productivity',
+              label: (
+                <span>
+                  <TrophyOutlined /> My Productivity
+                </span>
+              ),
+              children: renderProductivityTab(),
             },
           ]}
         />

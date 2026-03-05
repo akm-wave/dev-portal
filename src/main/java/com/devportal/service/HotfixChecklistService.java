@@ -50,7 +50,7 @@ public class HotfixChecklistService {
                 HotfixChecklistProgress newProgress = HotfixChecklistProgress.builder()
                         .hotfix(hotfix)
                         .checklist(checklist)
-                        .status(ChecklistStatus.PENDING)
+                        .status(ChecklistStatus.PLANNED)
                         .build();
                 progressRepository.save(newProgress);
             }

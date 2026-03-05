@@ -31,7 +31,7 @@ public class Issue extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private IssueStatus status = IssueStatus.OPEN;
+    private IssueStatus status = IssueStatus.PLANNED;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)

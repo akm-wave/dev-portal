@@ -30,10 +30,10 @@ export interface PagedResponse<T> {
   first: boolean;
 }
 
-export type ChecklistStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'BLOCKED';
+export type ChecklistStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'BLOCKED';
 export type ChecklistPriority = 'LOW' | 'MEDIUM' | 'HIGH';
-export type MicroserviceStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-export type FeatureStatus = 'PLANNED' | 'IN_PROGRESS' | 'RELEASED';
+export type MicroserviceStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
+export type FeatureStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'RELEASED';
 
 export interface Checklist {
   id: string;
@@ -215,9 +215,9 @@ export interface ActivityLog {
 
 // Incident, Hotfix, Issue types
 export type Severity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-export type IncidentStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-export type HotfixStatus = 'PLANNED' | 'IN_PROGRESS' | 'DEPLOYED';
-export type IssueStatus = 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+export type IncidentStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type HotfixStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'DEPLOYED';
+export type IssueStatus = 'PLANNED' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
 export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type IssueCategory = 'TECH_DEBT' | 'TECHNICAL_ISSUE' | 'PROD_ISSUE' | 'BUG' | 'ENHANCEMENT' | 'SECURITY' | 'PERFORMANCE' | 'OTHER';
 
@@ -384,6 +384,64 @@ export interface GlobalSearchResult {
   attachments: SearchItem[];
   questions: SearchItem[];
   totalCount: number;
+}
+
+// Workspace Productivity types
+export interface WorkspaceProductivityDTO {
+  // SECTION A - My Active Work
+  activeFeatures: number;
+  activeIncidents: number;
+  activeHotfixes: number;
+  activeIssues: number;
+  activeMicroservices: number;
+  overdueTasks: number;
+  
+  // SECTION B - My Productivity Metrics
+  completionRate: number;
+  onTimeRate: number;
+  avgResolutionTime: number; // in hours
+  productivityScore: number;
+  previousPeriodScore: number;
+  trendPercentage: number; // positive for improvement, negative for decline
+  weeklyTrend: WeekScoreDTO[];
+  
+  // SECTION C - Accountability
+  overdueItems: OverdueTaskDTO[];
+  recentActivities: ActivityDTO[];
+  
+  // Metadata
+  generatedAt: string;
+  dateRange: string;
+}
+
+export interface WeekScoreDTO {
+  weekStart: string; // ISO date string
+  weekEnd: string;   // ISO date string
+  score: number;
+  completedItems: number;
+}
+
+export interface OverdueTaskDTO {
+  id: string;
+  title: string;
+  type: 'FEATURE' | 'INCIDENT' | 'HOTFIX' | 'ISSUE' | 'CHECKPOINT';
+  status: string;
+  dueDate: string;
+  createdAt: string;
+  daysOverdue: number;
+  priority: string;
+  assignee: string;
+}
+
+export interface ActivityDTO {
+  id: string;
+  type: 'COMPLETED_FEATURE' | 'RESOLVED_ISSUE' | 'RESOLVED_INCIDENT' | 'DEPLOYED_HOTFIX' | 'COMPLETED_CHECKPOINT';
+  title: string;
+  completedAt: string;
+  dueDate: string;
+  onTime: boolean;
+  points: number;
+  assignee: string;
 }
 
 // Utility types

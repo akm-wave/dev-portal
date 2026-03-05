@@ -55,7 +55,7 @@ public class DashboardService {
         }
 
         // Calculate overall progress
-        long completedChecklists = checklistsByStatus.getOrDefault(ChecklistStatus.DONE.name(), 0L);
+        long completedChecklists = checklistsByStatus.getOrDefault(ChecklistStatus.COMPLETED.name(), 0L);
         double overallProgress = totalChecklists > 0 ? 
                 Math.round((completedChecklists * 100.0 / totalChecklists) * 100.0) / 100.0 : 0.0;
 
@@ -83,7 +83,7 @@ public class DashboardService {
         long openTechDebtIssues = 0;
         try {
             totalTechDebtIssues = issueRepository.countByCategory(IssueCategory.TECH_DEBT);
-            openTechDebtIssues = issueRepository.countByCategoryAndStatusNot(IssueCategory.TECH_DEBT, IssueStatus.RESOLVED);
+            openTechDebtIssues = issueRepository.countByCategoryAndStatusNot(IssueCategory.TECH_DEBT, IssueStatus.COMPLETED);
         } catch (Exception e) {
             // Log but don't fail dashboard
         }
@@ -149,7 +149,7 @@ public class DashboardService {
                             if (c.getStatus() == ChecklistStatus.BLOCKED) {
                                 blockedCount++;
                             }
-                            if (c.getStatus() == ChecklistStatus.PENDING && 
+                            if (c.getStatus() == ChecklistStatus.PLANNED && 
                                 c.getCreatedAt() != null && 
                                 c.getCreatedAt().isBefore(fourteenDaysAgo)) {
                                 stalePendingCount++;
@@ -171,7 +171,7 @@ public class DashboardService {
     private double calculateMicroserviceProgress(Microservice ms) {
         if (ms.getChecklists() == null || ms.getChecklists().isEmpty()) return 0.0;
         long completed = ms.getChecklists().stream()
-                .filter(c -> c.getStatus() == ChecklistStatus.DONE)
+                .filter(c -> c.getStatus() == ChecklistStatus.COMPLETED)
                 .count();
         return Math.round((completed * 100.0 / ms.getChecklists().size()) * 100.0) / 100.0;
     }

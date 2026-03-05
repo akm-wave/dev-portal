@@ -66,7 +66,7 @@ public class IssueService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .priority(request.getPriority())
-                .status(IssueStatus.OPEN)
+                .status(IssueStatus.PLANNED)
                 .category(request.getCategory())
                 .mainFeature(feature)
                 .createdBy(username)
@@ -104,7 +104,7 @@ public class IssueService {
         if (request.getStatus() != null) {
             IssueStatus oldStatus = issue.getStatus();
             issue.setStatus(request.getStatus());
-            if (request.getStatus() == IssueStatus.RESOLVED && oldStatus != IssueStatus.RESOLVED) {
+            if (request.getStatus() == IssueStatus.COMPLETED && oldStatus != IssueStatus.COMPLETED) {
                 issue.setResolvedAt(LocalDateTime.now());
             }
         }
@@ -147,7 +147,7 @@ public class IssueService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
         issue.setAssignedTo(assignee);
-        if (issue.getStatus() == IssueStatus.OPEN) {
+        if (issue.getStatus() == IssueStatus.PLANNED) {
             issue.setStatus(IssueStatus.ASSIGNED);
         }
 
@@ -161,7 +161,7 @@ public class IssueService {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
 
-        issue.setStatus(IssueStatus.RESOLVED);
+        issue.setStatus(IssueStatus.COMPLETED);
         issue.setResolvedAt(LocalDateTime.now());
         if (resultComment != null) {
             issue.setResultComment(resultComment);

@@ -48,7 +48,7 @@ public class HotfixDetailsService {
                 HotfixChecklistProgress newProgress = HotfixChecklistProgress.builder()
                         .hotfix(hotfix)
                         .checklist(checklist)
-                        .status(ChecklistStatus.PENDING)
+                        .status(ChecklistStatus.PLANNED)
                         .build();
                 progressRepository.save(newProgress);
             }
@@ -69,7 +69,7 @@ public class HotfixDetailsService {
                 .collect(Collectors.toList());
 
         long completedCount = checkpointAnalyses.stream()
-                .filter(c -> c.getHotfixStatus() == ChecklistStatus.DONE)
+                .filter(c -> c.getHotfixStatus() == ChecklistStatus.COMPLETED)
                 .count();
         double overallProgress = allChecklists.isEmpty() ? 0.0 : 
                 Math.round((completedCount * 100.0 / allChecklists.size()) * 100.0) / 100.0;
@@ -113,7 +113,7 @@ public class HotfixDetailsService {
                 .filter(cl -> {
                     HotfixChecklistProgress progress = progressMap.get(cl.getId());
                     ChecklistStatus status = progress != null ? progress.getStatus() : cl.getStatus();
-                    return status == ChecklistStatus.DONE;
+                    return status == ChecklistStatus.COMPLETED;
                 })
                 .count();
 

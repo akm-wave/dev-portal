@@ -26,8 +26,8 @@ public class RelationshipService {
 
     @Transactional(readOnly = true)
     public RelationshipResponse getRelationships() {
-        List<Microservice> allMicroservices = microserviceRepository.findAll();
-        List<Feature> allFeatures = featureRepository.findAll();
+        List<Microservice> allMicroservices = microserviceRepository.findAllWithRelationships();
+        List<Feature> allFeatures = featureRepository.findAllWithMicroservices();
 
         Map<String, Set<String>> microserviceToFeatures = new HashMap<>();
         Map<String, Set<String>> featureToMicroservices = new HashMap<>();
@@ -65,7 +65,7 @@ public class RelationshipService {
                     Set<Checklist> checklists = ms.getChecklists();
                     int checklistCount = checklists != null ? checklists.size() : 0;
                     long completedCount = checklists != null ? 
-                            checklists.stream().filter(c -> c.getStatus() == ChecklistStatus.DONE).count() : 0;
+                            checklists.stream().filter(c -> c.getStatus() == ChecklistStatus.COMPLETED).count() : 0;
                     double progress = checklistCount > 0 ? 
                             Math.round((completedCount * 100.0 / checklistCount) * 100.0) / 100.0 : 0.0;
 

@@ -31,4 +31,7 @@ public interface MicroserviceRepository extends JpaRepository<Microservice, UUID
     List<Microservice> findByFeatureId(@Param("featureId") UUID featureId);
     
     long countByStatus(MicroserviceStatus status);
+    
+    @Query("SELECT DISTINCT m FROM Microservice m LEFT JOIN FETCH m.checklists LEFT JOIN FETCH m.owner")
+    List<Microservice> findAllWithRelationships();
 }

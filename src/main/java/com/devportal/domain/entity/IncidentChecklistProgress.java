@@ -35,7 +35,7 @@ public class IncidentChecklistProgress {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private ChecklistStatus status = ChecklistStatus.PENDING;
+    private ChecklistStatus status = ChecklistStatus.PLANNED;
 
     @Column(columnDefinition = "TEXT")
     private String remark;

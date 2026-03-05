@@ -44,4 +44,7 @@ public interface FeatureRepository extends JpaRepository<Feature, UUID> {
            "(LOWER(f.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(f.description) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Feature> searchByOwnerIdAndNameOrDescription(@Param("userId") UUID userId, @Param("search") String search, Pageable pageable);
+    
+    @Query("SELECT DISTINCT f FROM Feature f LEFT JOIN FETCH f.microservices")
+    List<Feature> findAllWithMicroservices();
 }

@@ -1,8 +1,8 @@
 package com.devportal.domain.enums;
 
 public enum IncidentStatus {
-    OPEN,
+    PLANNED,
     IN_PROGRESS,
-    RESOLVED,
+    COMPLETED,
     CLOSED
 }

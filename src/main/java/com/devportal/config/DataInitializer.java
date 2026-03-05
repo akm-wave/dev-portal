@@ -148,9 +148,9 @@ public class DataInitializer implements CommandLineRunner {
 
     private ChecklistStatus getWeightedStatus() {
         int rand = random.nextInt(100);
-        if (rand < 35) return ChecklistStatus.DONE;
+        if (rand < 35) return ChecklistStatus.COMPLETED;
         if (rand < 60) return ChecklistStatus.IN_PROGRESS;
-        if (rand < 85) return ChecklistStatus.PENDING;
+        if (rand < 85) return ChecklistStatus.PLANNED;
         return ChecklistStatus.BLOCKED;
     }
 
@@ -175,9 +175,9 @@ public class DataInitializer implements CommandLineRunner {
                 MicroserviceStatus.IN_PROGRESS,
                 MicroserviceStatus.COMPLETED,
                 MicroserviceStatus.IN_PROGRESS,
-                MicroserviceStatus.NOT_STARTED,
+                MicroserviceStatus.PLANNED,
                 MicroserviceStatus.IN_PROGRESS,
-                MicroserviceStatus.NOT_STARTED,
+                MicroserviceStatus.PLANNED,
                 MicroserviceStatus.COMPLETED
         };
 
@@ -339,7 +339,7 @@ public class DataInitializer implements CommandLineRunner {
                 score += 10;
             }
 
-            if (checklist.getStatus() == ChecklistStatus.PENDING &&
+            if (checklist.getStatus() == ChecklistStatus.PLANNED &&
                     checklist.getCreatedAt() != null &&
                     checklist.getCreatedAt().isBefore(fourteenDaysAgo)) {
                 score += 5;
@@ -381,7 +381,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Payment Gateway Timeout",
                         "Multiple users reporting payment failures due to gateway timeout errors. Transaction success rate dropped to 85% from normal 99.5%.",
                         Severity.HIGH,
-                        IncidentStatus.RESOLVED,
+                        IncidentStatus.COMPLETED,
                         new String[]{"payment-service"},
                         "Payment Gateway Upgrade"
                 },
@@ -397,7 +397,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Wallet Balance Sync Issue",
                         "Some users seeing incorrect wallet balance after transactions. Database replication lag detected between primary and read replicas.",
                         Severity.HIGH,
-                        IncidentStatus.RESOLVED,
+                        IncidentStatus.COMPLETED,
                         new String[]{"wallet-service"},
                         "Wallet Performance Optimization"
                 },
@@ -405,7 +405,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Notification Service Outage",
                         "Push notifications not being delivered to iOS devices. APNs certificate expired causing delivery failures.",
                         Severity.HIGH,
-                        IncidentStatus.RESOLVED,
+                        IncidentStatus.COMPLETED,
                         new String[]{"notification-service"},
                         "User Onboarding Enhancement"
                 },
@@ -429,7 +429,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Database Connection Pool Exhaustion",
                         "Reporting service exhausting database connection pool during peak hours. Queries taking longer than expected.",
                         Severity.MEDIUM,
-                        IncidentStatus.OPEN,
+                        IncidentStatus.PLANNED,
                         new String[]{"reporting-service"},
                         "Admin Portal Revamp"
                 },
@@ -437,7 +437,7 @@ public class DataInitializer implements CommandLineRunner {
                         "API Rate Limiting Misconfiguration",
                         "Rate limiting incorrectly configured causing legitimate API calls to be blocked. Affecting partner integrations.",
                         Severity.LOW,
-                        IncidentStatus.RESOLVED,
+                        IncidentStatus.COMPLETED,
                         new String[]{"admin-service"},
                         "Admin Portal Revamp"
                 }
@@ -481,7 +481,7 @@ public class DataInitializer implements CommandLineRunner {
                     .createdBy("admin")
                     .build();
 
-            if (status == IncidentStatus.RESOLVED) {
+            if (status == IncidentStatus.COMPLETED) {
                 incident.setResolvedAt(LocalDateTime.now().minusDays(random.nextInt(5)));
             }
 
@@ -616,7 +616,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Add Biometric Authentication Support",
                         "Implement fingerprint and face recognition authentication for mobile app users to improve security and UX.",
                         IssuePriority.HIGH,
-                        IssueStatus.OPEN,
+                        IssueStatus.PLANNED,
                         "User Onboarding Enhancement"
                 },
                 {
@@ -630,7 +630,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Add Transaction Export Feature",
                         "Users requesting ability to export transaction history to CSV/PDF for accounting purposes.",
                         IssuePriority.LOW,
-                        IssueStatus.OPEN,
+                        IssueStatus.PLANNED,
                         "Wallet Performance Optimization"
                 },
                 {
@@ -644,7 +644,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Add Dark Mode Support",
                         "Implement dark mode theme for admin portal to reduce eye strain during night shifts.",
                         IssuePriority.LOW,
-                        IssueStatus.OPEN,
+                        IssueStatus.PLANNED,
                         "Admin Portal Revamp"
                 },
                 {
@@ -658,14 +658,14 @@ public class DataInitializer implements CommandLineRunner {
                         "Add Multi-language Support",
                         "Support for multiple languages (Myanmar, English, Chinese) in user-facing applications.",
                         IssuePriority.HIGH,
-                        IssueStatus.OPEN,
+                        IssueStatus.PLANNED,
                         "User Onboarding Enhancement"
                 },
                 {
                         "Implement Scheduled Reports",
                         "Allow admins to schedule automated reports to be generated and emailed at specified intervals.",
                         IssuePriority.MEDIUM,
-                        IssueStatus.RESOLVED,
+                        IssueStatus.COMPLETED,
                         "Admin Portal Revamp"
                 },
                 {
@@ -679,7 +679,7 @@ public class DataInitializer implements CommandLineRunner {
                         "Optimize Mobile App Battery Usage",
                         "Background sync consuming too much battery. Need to optimize sync intervals and use WorkManager.",
                         IssuePriority.MEDIUM,
-                        IssueStatus.OPEN,
+                        IssueStatus.PLANNED,
                         "User Onboarding Enhancement"
                 },
                 {
@@ -714,7 +714,7 @@ public class DataInitializer implements CommandLineRunner {
                     .createdBy("admin")
                     .build();
 
-            if (status == IssueStatus.RESOLVED) {
+            if (status == IssueStatus.COMPLETED) {
                 issue.setResolvedAt(LocalDateTime.now().minusDays(random.nextInt(10)));
             }
 

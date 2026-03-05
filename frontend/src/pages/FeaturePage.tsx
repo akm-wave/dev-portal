@@ -403,7 +403,7 @@ const FeaturePage: React.FC = () => {
               <Form.Item name="ownerId" label="Owner">
                 <Select placeholder="Select owner" allowClear showSearch optionFilterProp="children">
                   {users.map(u => (
-                    <Option key={u.id} value={u.id}>{u.username} ({u.email})</Option>
+                    <Option key={u.id} value={u.id}>{u.fullName || u.username}</Option>
                   ))}
                 </Select>
               </Form.Item>

@@ -73,7 +73,7 @@ public class ChecklistService {
         checklist.setIsActive(true);
         
         if (checklist.getStatus() == null) {
-            checklist.setStatus(ChecklistStatus.PENDING);
+            checklist.setStatus(ChecklistStatus.PLANNED);
         }
         if (checklist.getPriority() == null) {
             checklist.setPriority(ChecklistPriority.MEDIUM);

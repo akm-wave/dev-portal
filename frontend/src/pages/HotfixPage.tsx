@@ -5,7 +5,8 @@ import AIRephraseButton from '../components/AIRephraseButton';
 import { hotfixService } from '../services/hotfixService';
 import { featureService } from '../services/featureService';
 import { microserviceService } from '../services/microserviceService';
-import { Hotfix, HotfixRequest, HotfixStatus, Feature, Microservice } from '../types';
+import { userService } from '../services/userService';
+import { Hotfix, HotfixRequest, HotfixStatus, Feature, Microservice, UserSummary } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -24,6 +25,7 @@ const HotfixPage: React.FC = () => {
   const [hotfixes, setHotfixes] = useState<Hotfix[]>([]);
   const [features, setFeatures] = useState<Feature[]>([]);
   const [microservices, setMicroservices] = useState<Microservice[]>([]);
+  const [users, setUsers] = useState<UserSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingHotfix, setEditingHotfix] = useState<Hotfix | null>(null);
@@ -36,6 +38,7 @@ const HotfixPage: React.FC = () => {
     loadHotfixes();
     loadFeatures();
     loadMicroservices();
+    loadUsers();
   }, [pagination.current, pagination.pageSize]);
 
   const loadHotfixes = async () => {
@@ -58,8 +61,10 @@ const HotfixPage: React.FC = () => {
     try {
       const response = await featureService.getAll({ size: 1000 });
       setFeatures(response.content);
+      console.log('Features loaded in Hotfixes:', response.content.length);
     } catch (error) {
-      console.error('Failed to load features');
+      console.error('Failed to load features', error);
+      message.error('Failed to load features');
     }
   };
 
@@ -69,6 +74,15 @@ const HotfixPage: React.FC = () => {
       setMicroservices(response.content);
     } catch (error) {
       console.error('Failed to load microservices');
+    }
+  };
+
+  const loadUsers = async () => {
+    try {
+      const response = await userService.getApprovedUsers();
+      setUsers(response);
+    } catch (error) {
+      console.error('Failed to load users');
     }
   };
 
@@ -83,6 +97,7 @@ const HotfixPage: React.FC = () => {
     form.setFieldsValue({
       ...record,
       mainFeatureId: record.mainFeature.id,
+      ownerId: record.owner?.id,
       microserviceIds: record.microservices?.map(m => m.id) || [],
     });
     setModalVisible(true);
@@ -268,9 +283,25 @@ const HotfixPage: React.FC = () => {
             label="Main Feature"
             rules={[{ required: true, message: 'Please select main feature' }]}
           >
-            <Select placeholder="Select main feature" showSearch optionFilterProp="children">
+            <Select 
+              placeholder="Select main feature" 
+              showSearch 
+              optionFilterProp="children"
+              loading={features.length === 0}
+              notFoundContent={features.length === 0 ? "Loading features..." : "No features found"}
+            >
               {features.map(f => (
-                <Option key={f.id} value={f.id}>{f.name} ({f.domain})</Option>
+                <Option key={f.id} value={f.id}>{f.name}</Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="ownerId"
+            label="Owner"
+          >
+            <Select placeholder="Select owner" showSearch optionFilterProp="children" allowClear>
+              {users.map(u => (
+                <Option key={u.id} value={u.id}>{u.fullName || u.username}</Option>
               ))}
             </Select>
           </Form.Item>
