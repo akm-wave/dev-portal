@@ -168,6 +168,7 @@ const FeaturePage: React.FC = () => {
   const statusColors: Record<FeatureStatus, string> = {
     PLANNED: 'blue',
     IN_PROGRESS: 'orange',
+    COMPLETED: 'cyan',
     RELEASED: 'green',
   };
 

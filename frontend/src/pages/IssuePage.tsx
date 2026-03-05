@@ -26,9 +26,11 @@ const priorityColors: Record<IssuePriority, string> = {
 
 const statusColors: Record<IssueStatus, string> = {
   OPEN: 'default',
-  ASSIGNED: 'blue',
+  PLANNED: 'blue',
+  ASSIGNED: 'purple',
   IN_PROGRESS: 'orange',
   RESOLVED: 'green',
+  COMPLETED: 'cyan',
   CLOSED: 'default',
 };
 

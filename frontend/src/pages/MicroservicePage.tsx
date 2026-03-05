@@ -108,6 +108,7 @@ const MicroservicePage: React.FC = () => {
 
   const statusColors: Record<MicroserviceStatus, string> = {
     NOT_STARTED: 'default',
+    PLANNED: 'blue',
     IN_PROGRESS: 'processing',
     COMPLETED: 'success',
   };

@@ -30,9 +30,9 @@ export interface PagedResponse<T> {
   first: boolean;
 }
 
-export type ChecklistStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'BLOCKED';
+export type ChecklistStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'BLOCKED';
 export type ChecklistPriority = 'LOW' | 'MEDIUM' | 'HIGH';
-export type MicroserviceStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
+export type MicroserviceStatus = 'NOT_STARTED' | 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
 export type FeatureStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'RELEASED';
 
 export interface Checklist {
@@ -215,9 +215,9 @@ export interface ActivityLog {
 
 // Incident, Hotfix, Issue types
 export type Severity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-export type IncidentStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type IncidentStatus = 'OPEN' | 'PLANNED' | 'IN_PROGRESS' | 'RESOLVED' | 'COMPLETED' | 'CLOSED';
 export type HotfixStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'DEPLOYED';
-export type IssueStatus = 'PLANNED' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type IssueStatus = 'OPEN' | 'PLANNED' | 'ASSIGNED' | 'IN_PROGRESS' | 'RESOLVED' | 'COMPLETED' | 'CLOSED';
 export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type IssueCategory = 'TECH_DEBT' | 'TECHNICAL_ISSUE' | 'PROD_ISSUE' | 'BUG' | 'ENHANCEMENT' | 'SECURITY' | 'PERFORMANCE' | 'OTHER';
 

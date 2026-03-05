@@ -24,8 +24,10 @@ const severityColors: Record<Severity, string> = {
 
 const statusColors: Record<IncidentStatus, string> = {
   OPEN: 'red',
+  PLANNED: 'blue',
   IN_PROGRESS: 'orange',
   RESOLVED: 'green',
+  COMPLETED: 'cyan',
   CLOSED: 'default',
 };
 

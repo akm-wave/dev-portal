@@ -306,7 +306,8 @@ const MyWorkspacePage: React.FC = () => {
 
   const handleSnoozeReminder = async (id: string, minutes: number) => {
     try {
-      await reminderService.snoozeReminder(id, minutes);
+      const snoozeUntil = new Date(Date.now() + minutes * 60 * 1000);
+      await reminderService.snoozeReminder(id, snoozeUntil);
       message.success(`Reminder snoozed for ${minutes} minutes`);
       loadReminders();
     } catch (error) {

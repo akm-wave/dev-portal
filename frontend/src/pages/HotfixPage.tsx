@@ -18,6 +18,7 @@ const { TextArea } = Input;
 const statusColors: Record<HotfixStatus, string> = {
   PLANNED: 'blue',
   IN_PROGRESS: 'orange',
+  COMPLETED: 'cyan',
   DEPLOYED: 'green',
 };
 
