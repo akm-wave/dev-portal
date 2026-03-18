@@ -17,7 +17,18 @@ api.interceptors.request.use(
     }
     const url = (config.baseURL || '') + (config.url || '');
     const params = config.params ? JSON.stringify(config.params) : '';
-    console.log('API Request:', config.method?.toUpperCase(), url, params);
+    const method = config.method?.toUpperCase();
+    const data = ((): string => {
+      if (!method || method === 'GET') return '';
+      if (config.data == null) return '';
+      try {
+        const raw = typeof config.data === 'string' ? config.data : JSON.stringify(config.data);
+        return raw.length > 800 ? raw.slice(0, 800) + '...(truncated)' : raw;
+      } catch {
+        return '[unserializable request body]';
+      }
+    })();
+    console.log('API Request:', method, url, params, data);
     return config;
   },
   (error: AxiosError) => {

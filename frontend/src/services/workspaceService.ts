@@ -30,6 +30,7 @@ export const noteService = {
   },
 
   createNote: async (request: UserNoteRequest): Promise<UserNote> => {
+    console.log(request);
     const response = await api.post('/workspace/notes', request);
     return response.data.data;
   },
