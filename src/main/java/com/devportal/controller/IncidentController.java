@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.devportal.domain.enums.IncidentStatus;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +43,11 @@ public class IncidentController {
 
     @GetMapping
     @Operation(summary = "Get all incidents")
-    public ResponseEntity<ApiResponse<Page<IncidentResponse>>> getAll(Pageable pageable) {
-        Page<IncidentResponse> incidents = incidentService.getAll(pageable);
+    public ResponseEntity<ApiResponse<Page<IncidentResponse>>> getAll(
+            Pageable pageable,
+            @RequestParam(required = false) IncidentStatus status,
+            @RequestParam(required = false) String search) {
+        Page<IncidentResponse> incidents = incidentService.getAll(pageable, status, search);
         return ResponseEntity.ok(ApiResponse.success("Incidents retrieved successfully", incidents));
     }
 

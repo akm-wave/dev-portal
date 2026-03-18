@@ -40,6 +40,7 @@ const IncidentPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingIncident, setEditingIncident] = useState<Incident | null>(null);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [filters, setFilters] = useState<{ status?: IncidentStatus; search?: string }>({});
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -49,7 +50,7 @@ const IncidentPage: React.FC = () => {
     loadFeatures();
     loadMicroservices();
     loadUsers();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, filters]);
 
   const loadIncidents = async () => {
     setLoading(true);
@@ -57,6 +58,7 @@ const IncidentPage: React.FC = () => {
       const response = await incidentService.getAll({
         page: pagination.current - 1,
         size: pagination.pageSize,
+        ...filters,
       });
       setIncidents(response.content);
       setPagination(prev => ({ ...prev, total: response.totalElements }));
@@ -212,18 +214,34 @@ const IncidentPage: React.FC = () => {
       <Card>
         <Row gutter={16} style={{ marginBottom: 16 }}>
           <Col flex="auto">
+	  <Space>
             <Input
               placeholder="Search incidents..."
               prefix={<SearchOutlined />}
+	      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
               style={{ width: 250 }}
               allowClear
             />
+	    <Select
+                placeholder="Status"
+                allowClear
+                style={{ width: 150 }}
+                onChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+              >
+                <Option value="PLANNED">Planned</Option>
+                <Option value="IN_PROGRESS">In Progress</Option>
+                <Option value="COMPLETED">Completed</Option>
+                <Option value="CLOSED">Closed</Option>
+              </Select>
+            </Space>
           </Col>
+	  {isAdmin && (
           <Col>
             <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
               Report Incident
             </Button>
           </Col>
+         )}
         </Row>
 
         <Table
@@ -287,11 +305,11 @@ const IncidentPage: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="status" label="Status" initialValue="OPEN">
+              <Form.Item name="status" label="Status" initialValue="PLANNED">
                 <Select>
-                  <Option value="OPEN">Open</Option>
+                  <Option value="PLANNED">Planned</Option>
                   <Option value="IN_PROGRESS">In Progress</Option>
-                  <Option value="RESOLVED">Resolved</Option>
+                  <Option value="COMPLETED">Completed</Option>
                   <Option value="CLOSED">Closed</Option>
                 </Select>
               </Form.Item>

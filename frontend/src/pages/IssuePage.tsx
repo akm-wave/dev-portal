@@ -66,6 +66,7 @@ const IssuePage: React.FC = () => {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [filters, setFilters] = useState<{ search?: string }>({});
   const [attachments, setAttachments] = useState<IssueAttachment[]>([]);
   const [comments, setComments] = useState<IssueComment[]>([]);
   const [isOwner, setIsOwner] = useState(false);
@@ -84,7 +85,7 @@ const IssuePage: React.FC = () => {
     loadIssues();
     loadFeatures();
     loadUsers();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, filters]);
 
   const loadIssues = async () => {
     setLoading(true);
@@ -92,6 +93,7 @@ const IssuePage: React.FC = () => {
       const response = await issueService.getAll({
         page: pagination.current - 1,
         size: pagination.pageSize,
+        ...filters,
       });
       setIssues(response.content);
       setPagination(prev => ({ ...prev, total: response.totalElements }));
@@ -339,6 +341,10 @@ const IssuePage: React.FC = () => {
             <Input
               placeholder="Search issues..."
               prefix={<SearchOutlined />}
+              onChange={(e) => {
+                setPagination(prev => ({ ...prev, current: 1 }));
+                setFilters(prev => ({ ...prev, search: e.target.value }));
+              }}
               style={{ width: 250 }}
               allowClear
             />

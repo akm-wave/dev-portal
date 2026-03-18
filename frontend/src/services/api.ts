@@ -15,7 +15,9 @@ api.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('API Request:', config.method?.toUpperCase(), (config.baseURL || '') + (config.url || ''));
+    const url = (config.baseURL || '') + (config.url || '');
+    const params = config.params ? JSON.stringify(config.params) : '';
+    console.log('API Request:', config.method?.toUpperCase(), url, params);
     return config;
   },
   (error: AxiosError) => {

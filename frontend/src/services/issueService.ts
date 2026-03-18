@@ -2,7 +2,7 @@ import api from './api';
 import { ApiResponse, PagedResponse, Issue, IssueRequest, IssueAttachment, IssueComment, IssueCommentRequest } from '../types';
 
 export const issueService = {
-  getAll: async (params?: { page?: number; size?: number }): Promise<PagedResponse<Issue>> => {
+  getAll: async (params?: { page?: number; size?: number; status?: string; search?: string }): Promise<PagedResponse<Issue>> => {
     const response = await api.get<ApiResponse<PagedResponse<Issue>>>('/issues', { params });
     return response.data.data;
   },

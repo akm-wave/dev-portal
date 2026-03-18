@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.devportal.domain.enums.HotfixStatus;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +43,11 @@ public class HotfixController {
 
     @GetMapping
     @Operation(summary = "Get all hotfixes")
-    public ResponseEntity<ApiResponse<Page<HotfixResponse>>> getAll(Pageable pageable) {
-        Page<HotfixResponse> hotfixes = hotfixService.getAll(pageable);
+    public ResponseEntity<ApiResponse<Page<HotfixResponse>>> getAll(
+            Pageable pageable,
+            @RequestParam(required = false) HotfixStatus status,
+            @RequestParam(required = false) String search) {
+        Page<HotfixResponse> hotfixes = hotfixService.getAll(pageable, status, search);
         return ResponseEntity.ok(ApiResponse.success("Hotfixes retrieved successfully", hotfixes));
     }
 

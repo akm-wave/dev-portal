@@ -36,6 +36,11 @@ public class IncidentService {
     }
 
     @Transactional(readOnly = true)
+    public Page<IncidentResponse> getAll(Pageable pageable, IncidentStatus status, String search) {
+        return incidentRepository.findAllWithFilters(status, search, pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public IncidentResponse getById(UUID id) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident not found: " + id));

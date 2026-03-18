@@ -40,4 +40,19 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
     long countByCategory(IssueCategory category);
 
     long countByCategoryAndStatusNot(IssueCategory category, IssueStatus status);
+
+    @Query("""
+            SELECT i
+            FROM Issue i
+            WHERE (:status IS NULL OR i.status = :status)
+              AND (
+                :search IS NULL OR :search = ''
+                OR LOWER(i.title) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(i.description) LIKE LOWER(CONCAT('%', :search, '%'))
+              )
+            """)
+    Page<Issue> findAllWithFilters(
+            @Param("status") IssueStatus status,
+            @Param("search") String search,
+            Pageable pageable);
 }

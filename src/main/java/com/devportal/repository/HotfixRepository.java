@@ -27,4 +27,20 @@ public interface HotfixRepository extends JpaRepository<Hotfix, UUID> {
 
     @Query("SELECT DISTINCT m FROM Hotfix h JOIN h.microservices m WHERE h.mainFeature.id = :featureId")
     List<com.devportal.domain.entity.Microservice> findDistinctMicroservicesByFeatureId(@Param("featureId") UUID featureId);
+
+    @Query("""
+            SELECT h
+            FROM Hotfix h
+            WHERE (:status IS NULL OR h.status = :status)
+              AND (
+                :search IS NULL OR :search = ''
+                OR LOWER(h.title) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(h.description) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(h.releaseVersion) LIKE LOWER(CONCAT('%', :search, '%'))
+              )
+            """)
+    Page<Hotfix> findAllWithFilters(
+            @Param("status") com.devportal.domain.enums.HotfixStatus status,
+            @Param("search") String search,
+            Pageable pageable);
 }

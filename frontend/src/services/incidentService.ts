@@ -2,7 +2,7 @@ import api from './api';
 import { ApiResponse, PagedResponse, Incident, IncidentRequest, ChecklistProgress, ChecklistProgressUpdateRequest } from '../types';
 
 export const incidentService = {
-  getAll: async (params?: { page?: number; size?: number }): Promise<PagedResponse<Incident>> => {
+  getAll: async (params?: { page?: number; size?: number; status?: string; search?: string }): Promise<PagedResponse<Incident>> => {
     const response = await api.get<ApiResponse<PagedResponse<Incident>>>('/incidents', { params });
     return response.data.data;
   },

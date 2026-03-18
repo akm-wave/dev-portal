@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.devportal.domain.enums.IssueStatus;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +36,11 @@ public class IssueController {
 
     @GetMapping
     @Operation(summary = "Get all issues")
-    public ResponseEntity<ApiResponse<Page<IssueResponse>>> getAll(Pageable pageable) {
-        Page<IssueResponse> issues = issueService.getAll(pageable);
+    public ResponseEntity<ApiResponse<Page<IssueResponse>>> getAll(
+            Pageable pageable,
+            @RequestParam(required = false) IssueStatus status,
+            @RequestParam(required = false) String search) {
+        Page<IssueResponse> issues = issueService.getAll(pageable, status, search);
         return ResponseEntity.ok(ApiResponse.success("Issues retrieved successfully", issues));
     }
 

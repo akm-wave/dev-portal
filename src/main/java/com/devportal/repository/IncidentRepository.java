@@ -33,4 +33,19 @@ public interface IncidentRepository extends JpaRepository<Incident, UUID> {
 
     @Query("SELECT DISTINCT m FROM Incident i JOIN i.microservices m WHERE i.mainFeature.id = :featureId")
     List<com.devportal.domain.entity.Microservice> findDistinctMicroservicesByFeatureId(@Param("featureId") UUID featureId);
+
+    @Query("""
+            SELECT i
+            FROM Incident i
+            WHERE (:status IS NULL OR i.status = :status)
+              AND (
+                :search IS NULL OR :search = ''
+                OR LOWER(i.title) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(i.description) LIKE LOWER(CONCAT('%', :search, '%'))
+              )
+            """)
+    Page<Incident> findAllWithFilters(
+            @Param("status") IncidentStatus status,
+            @Param("search") String search,
+            Pageable pageable);
 }

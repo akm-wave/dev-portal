@@ -36,6 +36,11 @@ public class HotfixService {
     }
 
     @Transactional(readOnly = true)
+    public Page<HotfixResponse> getAll(Pageable pageable, HotfixStatus status, String search) {
+        return hotfixRepository.findAllWithFilters(status, search, pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public HotfixResponse getById(UUID id) {
         Hotfix hotfix = hotfixRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotfix not found: " + id));

@@ -31,6 +31,7 @@ const HotfixPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingHotfix, setEditingHotfix] = useState<Hotfix | null>(null);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [filters, setFilters] = useState<{ search?: string }>({});
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -40,7 +41,7 @@ const HotfixPage: React.FC = () => {
     loadFeatures();
     loadMicroservices();
     loadUsers();
-  }, [pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize, filters]);
 
   const loadHotfixes = async () => {
     setLoading(true);
@@ -48,6 +49,7 @@ const HotfixPage: React.FC = () => {
       const response = await hotfixService.getAll({
         page: pagination.current - 1,
         size: pagination.pageSize,
+        ...filters,
       });
       setHotfixes(response.content);
       setPagination(prev => ({ ...prev, total: response.totalElements }));
@@ -207,6 +209,10 @@ const HotfixPage: React.FC = () => {
             <Input
               placeholder="Search hotfixes..."
               prefix={<SearchOutlined />}
+              onChange={(e) => {
+                setPagination(prev => ({ ...prev, current: 1 }));
+                setFilters(prev => ({ ...prev, search: e.target.value }));
+              }}
               style={{ width: 250 }}
               allowClear
             />

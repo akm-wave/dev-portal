@@ -35,6 +35,11 @@ public class IssueService {
     }
 
     @Transactional(readOnly = true)
+    public Page<IssueResponse> getAll(Pageable pageable, IssueStatus status, String search) {
+        return issueRepository.findAllWithFilters(status, search, pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public IssueResponse getById(UUID id) {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));

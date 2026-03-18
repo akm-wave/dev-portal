@@ -2,7 +2,7 @@ import api from './api';
 import { ApiResponse, PagedResponse, Hotfix, HotfixRequest, ChecklistProgress, ChecklistProgressUpdateRequest } from '../types';
 
 export const hotfixService = {
-  getAll: async (params?: { page?: number; size?: number }): Promise<PagedResponse<Hotfix>> => {
+  getAll: async (params?: { page?: number; size?: number; status?: string; search?: string }): Promise<PagedResponse<Hotfix>> => {
     const response = await api.get<ApiResponse<PagedResponse<Hotfix>>>('/hotfixes', { params });
     return response.data.data;
   },
