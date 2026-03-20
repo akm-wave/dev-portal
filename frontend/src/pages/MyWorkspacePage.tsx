@@ -44,6 +44,13 @@ import {
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { noteService, reminderService, productivityService } from '../services/workspaceService';
+import { featureService } from '../services/featureService';
+import { microserviceService } from '../services/microserviceService';
+import releaseService from '../services/releaseService';
+import { utilityService } from '../services/utilityService';
+import { incidentService } from '../services/incidentService';
+import { hotfixService } from '../services/hotfixService';
+import { issueService } from '../services/issueService';
 import { 
   UserNote, 
   UserNoteRequest, 
@@ -107,6 +114,79 @@ const MyWorkspacePage: React.FC = () => {
   const [productivityData, setProductivityData] = useState<WorkspaceProductivityDTO | null>(null);
   const [productivityLoading, setProductivityLoading] = useState(false);
   const [dateRange, setDateRange] = useState('this_month');
+
+  const [moduleOptionsByType, setModuleOptionsByType] = useState<Record<string, { label: string; value: string }[]>>({});
+  const [moduleOptionsLoadingByType, setModuleOptionsLoadingByType] = useState<Record<string, boolean>>({});
+
+  const getPagedContent = (res: any): any[] => {
+    return res?.content || res?.data?.content || res?.data?.data?.content || [];
+  };
+
+  const loadModuleOptions = async (moduleType: ModuleType) => {
+    if (moduleOptionsByType[moduleType] || moduleOptionsLoadingByType[moduleType]) return;
+
+    setModuleOptionsLoadingByType(prev => ({ ...prev, [moduleType]: true }));
+    try {
+      const size = 1000;
+      if (moduleType === 'ISSUE') {
+        const res = await issueService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((i: any) => ({ label: i.title, value: i.id })),
+        }));
+      } else if (moduleType === 'FEATURE') {
+        const res = await featureService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((f: any) => ({ label: f.name, value: f.id })),
+        }));
+      } else if (moduleType === 'MICROSERVICE') {
+        const res = await microserviceService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((m: any) => ({ label: m.name, value: m.id })),
+        }));
+      } else if (moduleType === 'RELEASE') {
+        const res = await releaseService.getAll(0, size);
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((r: any) => ({ label: r.name, value: r.id })),
+        }));
+      } else if (moduleType === 'UTILITY') {
+        const res = await utilityService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((u: any) => ({ label: u.title, value: u.id })),
+        }));
+      } else if (moduleType === 'INCIDENT') {
+        const res = await incidentService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((i: any) => ({ label: i.title, value: i.id })),
+        }));
+      } else if (moduleType === 'HOTFIX') {
+        const res = await hotfixService.getAll({ size });
+        setModuleOptionsByType(prev => ({
+          ...prev,
+          [moduleType]: getPagedContent(res).map((h: any) => ({ label: h.title, value: h.id })),
+        }));
+      }
+    } catch (error) {
+      const err: any = error;
+      const status = err?.response?.status;
+      const statusText = err?.response?.statusText;
+      const backendMessage = err?.response?.data?.message;
+      console.error('[MyWorkspace] Failed to load modules for type:', moduleType, {
+        status,
+        statusText,
+        backendMessage,
+        error: err,
+      });
+      message.error(`Failed to load modules (${moduleType})`);
+    } finally {
+      setModuleOptionsLoadingByType(prev => ({ ...prev, [moduleType]: false }));
+    }
+  };
 
   // Load notes
   const loadNotes = async () => {
@@ -834,7 +914,14 @@ const MyWorkspacePage: React.FC = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="moduleType" label="Link to Module">
-                <Select placeholder="Select module type" allowClear>
+                <Select
+                  placeholder="Select module type"
+                  allowClear
+                  onChange={(value) => {
+                    noteForm.setFieldsValue({ moduleId: undefined });
+                    if (value) loadModuleOptions(value);
+                  }}
+                >
                   {MODULE_TYPES.map((type) => (
                     <Select.Option key={type.value} value={type.value}>
                       {type.label}
@@ -844,8 +931,28 @@ const MyWorkspacePage: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="moduleId" label="Module ID">
-                <Input placeholder="Module ID (UUID)" />
+              <Form.Item shouldUpdate={(prev, cur) => prev.moduleType !== cur.moduleType} noStyle>
+                {() => {
+                  const moduleType = noteForm.getFieldValue('moduleType') as ModuleType | undefined;
+                  const options = moduleType ? moduleOptionsByType[moduleType] || [] : [];
+                  const loading = moduleType ? !!moduleOptionsLoadingByType[moduleType] : false;
+
+                  return (
+                    <Form.Item name="moduleId" label="Module">
+                      <Select
+                        placeholder={moduleType ? 'Select module' : 'Select module type first'}
+                        disabled={!moduleType}
+                        loading={loading}
+                        options={options}
+                        allowClear
+                        showSearch
+                        filterOption={(input, option) =>
+                          (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                        }
+                      />
+                    </Form.Item>
+                  );
+                }}
               </Form.Item>
             </Col>
           </Row>
@@ -898,7 +1005,14 @@ const MyWorkspacePage: React.FC = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="moduleType" label="Link to Module">
-                <Select placeholder="Select module type" allowClear>
+                <Select
+                  placeholder="Select module type"
+                  allowClear
+                  onChange={(value) => {
+                    reminderForm.setFieldsValue({ moduleId: undefined });
+                    if (value) loadModuleOptions(value);
+                  }}
+                >
                   {MODULE_TYPES.map((type) => (
                     <Select.Option key={type.value} value={type.value}>
                       {type.label}
@@ -908,8 +1022,28 @@ const MyWorkspacePage: React.FC = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="moduleId" label="Module ID">
-                <Input placeholder="Module ID (UUID)" />
+              <Form.Item shouldUpdate={(prev, cur) => prev.moduleType !== cur.moduleType} noStyle>
+                {() => {
+                  const moduleType = reminderForm.getFieldValue('moduleType') as ModuleType | undefined;
+                  const options = moduleType ? moduleOptionsByType[moduleType] || [] : [];
+                  const loading = moduleType ? !!moduleOptionsLoadingByType[moduleType] : false;
+
+                  return (
+                    <Form.Item name="moduleId" label="Module">
+                      <Select
+                        placeholder={moduleType ? 'Select module' : 'Select module type first'}
+                        disabled={!moduleType}
+                        loading={loading}
+                        options={options}
+                        allowClear
+                        showSearch
+                        filterOption={(input, option) =>
+                          (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                        }
+                      />
+                    </Form.Item>
+                  );
+                }}
               </Form.Item>
             </Col>
           </Row>
