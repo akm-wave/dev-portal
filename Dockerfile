@@ -17,4 +17,4 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Xmx512m", "-Dserver.port=${PORT}", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx512m", "-Dserver.address=0.0.0.0","-Dserver.port=${PORT}", "-jar", "app.jar"]
